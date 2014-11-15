@@ -1,20 +1,48 @@
 <!DOCTYPE html>
-<html>
-<head lang="en">
+<html lang="en">
+<head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Traverse</title>
-  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css"/>
+  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/flatly.css"/>
 </head>
-<body>
-
+<body ng-app="traverse">
+<div class="container-fluid" ng-controller="mainCtrl">
+  <div class="row text-center">
+    <h1>TRAVERSE</h1>
+  </div>
+  <div class="row">
+    <form role="form" style="padding: 5px;">
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Enter starting point">
+      </div>
+      <div class="form-group" ng-repeat="destination in destinations">
+        <div ng-if="$index == 0 && destinations.length == 1">
+          <input type="text" class="form-control" placeholder="Destination  {{ $index + 1}}" ng-model="destination.destination">
+        </div>
+        <div class="input-group" ng-if="$index > 0 || destinations.length > 1">
+          <input type="text" class="form-control" placeholder="Destination  {{ $index + 1}}" ng-model="destination.destination">
+          <span class="input-group-btn">
+            <button class="btn btn-danger" type="button" ng-click="removeDestination($index)">
+              <i class="glyphicon glyphicon-remove"></i>
+            </button>
+          </span>
+        </div>
+      </div>
+      <button type="button" class="btn btn-default" ng-click="addNewDestination()">Add Destination</button>
+      <button type="submit" class="btn btn-success">Optimize Route</button>
+    </form>
+  </div>
+</div>
 
 <!-- Le Javascript-->
 <!-- Libs -->
 <script src="bower_components/jquery/dist/jquery.js"></script>
 <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
 <script src="bower_components/angular/angular.js"></script>
+<script src="bower_components/underscore/underscore.js"></script>
 <script type="text/javascript"
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCQ17IKv-dJvBpm91TzNmxjy8BxTu7zcUc">
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC1qqarxfzjfJ2mkQuBlP2azgzmc-Ldo4Y">
 </script>
 <!-- JS -->
 <script src="src/app.js"></script>
