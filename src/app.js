@@ -17,12 +17,12 @@ angular.module('traverse', [])
     }
 
     $scope.travelOptions = {
-      Driving: "DRIVING",
-      Walking: "WALKING",
-      Bicycling: "BICYCLING"
+      driving: "DRIVING",
+      walking: "WALKING",
+      bicycling: "BICYCLING"
     };
 
-    $scope.travelMode = $scope.travelOptions.Driving;
+    $scope.travelMode = $scope.travelOptions.driving;
 
     $scope.pointOfOrigin = new Location();
     $scope.destinations = [];
@@ -42,18 +42,26 @@ angular.module('traverse', [])
     $scope.getResults = function () {
       $scope.loading = true;
       var locations = [$scope.pointOfOrigin].concat($scope.destinations),
-        mapService = new google.maps.DistanceMatrixService(),
+        matrixService = new google.maps.DistanceMatrixService(),
+        routingService = new google.maps.DirectionsService(),
         matrixArgs = {
           destinations: [],
           origins: [],
           travelMode: $scope.travelMode
+        },
+        routingArgs = {
+          destination: undefined,
+          waypoints: [],
+          travelMode: $scope.travelMode,
+          origin: $scope.pointOfOrigin.address,
+          optimizeWaypoints: true
         };
 
       angular.forEach(locations, function (local) {
         matrixArgs.origins.push(local.address);
         matrixArgs.destinations.push(local.address);
       });
-      mapService.getDistanceMatrix(matrixArgs, function(d){
+      matrixService.getDistanceMatrix(matrixArgs, function(d){
         $scope.results = d;
         angular.forEach($scope.results.originAddresses, function(newAddress, key){
           if (key === 0) {
@@ -63,9 +71,16 @@ angular.module('traverse', [])
             $scope.destinations[key - 1].distanceFromOrigin = d.rows[0].elements[key].distance.text.replace(/\D/g, '');
           }
         });
-        //
         $scope.destinations.sort(function(a, b){
           return a.distanceFromOrigin-b.distanceFromOrigin;
+        });
+        var destinationsCopy = $scope.destinations;
+        routingArgs.destination = destinationsCopy.pop().address;
+        angular.forEach(destinationsCopy, function(local){
+          routingArgs.waypoints.push({location: local.address});
+        });
+        routingService.route(routingArgs, function(d) {
+          console.log(d);
         });
       });
       $timeout(function(){

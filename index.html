@@ -18,7 +18,7 @@
         <select class="form-control" ng-model="travelMode" ng-options="key for (key, value) in travelOptions"></select>
       </div>
       <div class="form-group">
-        <input ng-model="pointOfOrigin.address" type="text" class="form-control" placeholder="enter point of origin">
+        <input ng-model="pointOfOrigin.address" type="text" class="form-control" placeholder="point of origin">
       </div>
       <div class="form-group" ng-repeat="destination in destinations track by $index">
         <div class="input-group">
