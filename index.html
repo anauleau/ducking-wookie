@@ -50,6 +50,14 @@
     </div>
   </div>
   <div class="row" ng-hide="loading || !results">
+    <ul ng-repeat="leg in route.routes[0].legs">
+      <li>{{ leg.start_address }} to {{ leg.end_address }} - {{ leg.distance.text }} - {{ leg.duration.text }}</li>
+      <ol>
+        <li ng-repeat="step in leg.steps" ng-bind-html="step.instructions"></li>
+      </ol>
+    </ul>
+  </div>
+  <div class="row" ng-hide="loading || !results">
     <table class="table">
       <tbody>
         <tr>
@@ -75,6 +83,7 @@
 <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
 <script src="bower_components/angular/angular.js"></script>
 <script src="bower_components/underscore/underscore.js"></script>
+<script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
 <script type="text/javascript"
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC1qqarxfzjfJ2mkQuBlP2azgzmc-Ldo4Y">
 </script>

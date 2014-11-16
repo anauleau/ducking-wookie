@@ -2,7 +2,7 @@
  * Created by andreas on 11/7/14.
  */
 
-angular.module('traverse', [])
+angular.module('traverse', ['ngSanitize'])
   .controller('mainCtrl', ['$scope', '$timeout', function ($scope, $timeout) {
     function Location () {
       this.address;
@@ -74,13 +74,15 @@ angular.module('traverse', [])
         $scope.destinations.sort(function(a, b){
           return a.distanceFromOrigin-b.distanceFromOrigin;
         });
-        var destinationsCopy = $scope.destinations;
-        routingArgs.destination = destinationsCopy.pop().address;
-        angular.forEach(destinationsCopy, function(local){
-          routingArgs.waypoints.push({location: local.address});
+        routingArgs.destination = $scope.destinations[0].address;
+        angular.forEach($scope.destinations, function(local, key){
+          if (key !== 0 || key !== $scope.destinations.length - 1) {
+            routingArgs.waypoints.push({location: local.address});
+          }
         });
         routingService.route(routingArgs, function(d) {
-          console.log(d);
+          $scope.route = d;
+          window.route = d;
         });
       });
       $timeout(function(){
