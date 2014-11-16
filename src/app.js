@@ -39,6 +39,13 @@ angular.module('traverse', [])
       mapService.getDistanceMatrix(matrixArgs, function(d){
         $scope.results = d;
         window.results = d;
+        angular.forEach($scope.results.originAddresses, function(newAddress, key){
+          if (key === 0) {
+            $scope.pointOfOrigin.address = newAddress;
+          } else {
+            $scope.destinations[key - 1].address = newAddress;
+          }
+        });
       });
       $timeout(function(){
         $scope.loading = false;
