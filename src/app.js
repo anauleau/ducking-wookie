@@ -15,6 +15,15 @@ angular.module('traverse', [])
         return 1;
       return 0;
     }
+
+    $scope.travelOptions = {
+      Driving: "DRIVING",
+      Walking: "WALKING",
+      Bicycling: "BICYCLING"
+    };
+
+    $scope.travelMode = $scope.travelOptions.Driving;
+
     $scope.pointOfOrigin = new Location();
     $scope.destinations = [];
 
@@ -37,7 +46,7 @@ angular.module('traverse', [])
         matrixArgs = {
           destinations: [],
           origins: [],
-          travelMode: 'DRIVING'
+          travelMode: $scope.travelMode
         };
 
       angular.forEach(locations, function (local) {

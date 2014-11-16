@@ -10,14 +10,17 @@
 <body ng-app="traverse" ng-cloak>
 <div class="container-fluid" ng-controller="mainCtrl">
   <div class="row text-center">
-    <h1>traverse</h1>
+    <h1>traverse.</h1>
   </div>
   <div class="row" ng-hide="loading">
     <form role="form" style="padding: 5px;">
       <div class="form-group">
+        <select class="form-control" ng-model="travelMode" ng-options="key for (key, value) in travelOptions"></select>
+      </div>
+      <div class="form-group">
         <input ng-model="pointOfOrigin.address" type="text" class="form-control" placeholder="enter point of origin">
       </div>
-      <div class="form-group" ng-repeat="destination in destinations">
+      <div class="form-group" ng-repeat="destination in destinations track by $index">
         <div class="input-group">
           <input type="text" class="form-control" placeholder="destination  {{ $index + 1}}" ng-model="destination.address">
           <span class="input-group-btn">
@@ -51,11 +54,11 @@
       <tbody>
         <tr>
           <td></td>
-          <td ng-repeat="destination in results.destinationAddresses">
+          <td ng-repeat="destination in results.destinationAddresses track by $index">
             {{ destination }}
           </td>
         </tr>
-        <tr ng-repeat="origin in results.originAddresses">
+        <tr ng-repeat="origin in results.originAddresses track by $index">
           <td>{{ origin }}</td>
           <td ng-repeat="row in results.rows[$index].elements">
             {{ row.distance.text }}
