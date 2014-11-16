@@ -5,33 +5,64 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Traverse</title>
   <link rel="stylesheet" href="bower_components/bootstrap/dist/css/flatly.css"/>
+  <link rel="stylesheet" href="src/styles.css"/>
 </head>
-<body ng-app="traverse">
+<body ng-app="traverse" ng-cloak>
 <div class="container-fluid" ng-controller="mainCtrl">
   <div class="row text-center">
-    <h1>TRAVERSE</h1>
+    <h1>traverse</h1>
   </div>
-  <div class="row">
+  <div class="row" ng-hide="loading">
     <form role="form" style="padding: 5px;">
       <div class="form-group">
-        <input type="text" class="form-control" placeholder="Enter starting point">
+        <input ng-model="pointOfOrigin.address" type="text" class="form-control" placeholder="enter point of origin">
       </div>
       <div class="form-group" ng-repeat="destination in destinations">
-        <div ng-if="$index == 0 && destinations.length == 1">
-          <input type="text" class="form-control" placeholder="Destination  {{ $index + 1}}" ng-model="destination.destination">
-        </div>
-        <div class="input-group" ng-if="$index > 0 || destinations.length > 1">
-          <input type="text" class="form-control" placeholder="Destination  {{ $index + 1}}" ng-model="destination.destination">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="destination  {{ $index + 1}}" ng-model="destination.address">
           <span class="input-group-btn">
-            <button class="btn btn-danger" type="button" ng-click="removeDestination($index)">
-              <i class="glyphicon glyphicon-remove"></i>
+            <button class="btn" type="button" ng-click="removeDestination($index)"
+                    ng-class="{'disabled btn-default': destinations.length < 2, 'btn-danger': destinations.length > 1}">
+              <i class="glyphicon"
+                 ng-class="{'glyphicon-remove': destinations.length > 1, 'glyphicon-arrow-left': destinations.length < 2}">
+              </i>
             </button>
           </span>
         </div>
       </div>
-      <button type="button" class="btn btn-default" ng-click="addNewDestination()">Add Destination</button>
-      <button type="submit" class="btn btn-success">Optimize Route</button>
+      <button ng-cloak type="button" class="btn btn-default" ng-class="{disabled: destinations.length == 9}" ng-click="addNewDestination()">
+        <span ng-hide="destinations.length > 8">add destination</span>
+        <span ng-hide="destinations.length < 9">you've reached the maximum number of destinations</span>
+      </button>
+      <button type="submit" class="btn btn-success" ng-click="getResults()">optimize route!</button>
     </form>
+  </div>
+  <div class="row" ng-hide="!loading">
+    <div class="spinner">
+      <div class="rect1"></div>
+      <div class="rect2"></div>
+      <div class="rect3"></div>
+      <div class="rect4"></div>
+      <div class="rect5"></div>
+    </div>
+  </div>
+  <div class="row" ng-hide="loading || !results">
+    <table class="table">
+      <tbody>
+        <tr>
+          <td></td>
+          <td ng-repeat="destination in results.destinationAddresses">
+            {{ destination }}
+          </td>
+        </tr>
+        <tr ng-repeat="origin in results.originAddresses">
+          <td>{{ origin }}</td>
+          <td ng-repeat="row in results.rows[$index].elements">
+            {{ row.distance.text }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>
 
