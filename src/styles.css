@@ -59,3 +59,10 @@
 .margin-left-link {
     margin-left: 7px;
 }
+
+#map-canvas {
+    height: 450px;
+    width: 100%;
+    margin: 0px;
+    padding: 0px
+}

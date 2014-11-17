@@ -5,19 +5,21 @@
 angular.module('traverse', ['ngSanitize', 'geolocation'])
   .controller('mainCtrl', ['$scope', '$timeout', 'geolocation', '$q', function ($scope, $timeout, geolocation, $q) {
 
+    //var map;
+    //function initialize() {
+    //  var mapOptions = {
+    //    zoom: 8,
+    //    center: new google.maps.LatLng(-34.397, 150.644)
+    //  };
+    //  map = new google.maps.Map(document.getElementById('map-canvas'),
+    //    mapOptions);
+    //}
+    //google.maps.event.addDomListener(window, 'load', initialize);
+
     // Location class
     function Location () {
       this.address;
       this.distanceFromOrigin;
-    }
-
-    // Compare fn to order array of objects by property with num value
-    function compare(a,b) {
-      if (a.distanceFromOrigin < b.distanceFromOrigin)
-        return -1;
-      if (a.distanceFromOrigin > b.distanceFromOrigin)
-        return 1;
-      return 0;
     }
 
     // checks if navigator object available and gets current lat/long
@@ -85,6 +87,7 @@ angular.module('traverse', ['ngSanitize', 'geolocation'])
       var locations = [$scope.pointOfOrigin].concat($scope.destinations),
         matrixService = new google.maps.DistanceMatrixService(),
         routingService = new google.maps.DirectionsService(),
+        dirService = new google.maps.DirectionsRenderer(),
         matrixArgs = {
           destinations: [],
           origins: [],
@@ -113,12 +116,12 @@ angular.module('traverse', ['ngSanitize', 'geolocation'])
             $scope.pointOfOrigin.address = newAddress;
           } else {
             $scope.destinations[key - 1].address = newAddress;
-            $scope.destinations[key - 1].distanceFromOrigin = d.rows[0].elements[key].distance.text.replace(/\D/g, '');
+            $scope.destinations[key - 1].distanceFromOrigin = parseFloat(d.rows[0].elements[key].distance.text.replace(/km/g, ''));
           }
         });
         // sort destinations by distance to origin so they can be reflected in list
         $scope.destinations.sort(function(a, b){
-          return b.distanceFromOrigin-a.distanceFromOrigin;
+          return a.distanceFromOrigin-b.distanceFromOrigin;
         });
         // Set final destination in routing args
         routingArgs.destination = $scope.destinations[$scope.destinations.length - 1].address;
@@ -133,6 +136,7 @@ angular.module('traverse', ['ngSanitize', 'geolocation'])
           $scope.route = d;
         });
       });
+
       // Timeout for loading effect
       $timeout(function(){
         $scope.loading = false;
