@@ -20,6 +20,7 @@ angular.module('traverse', ['ngSanitize', 'geolocation'])
       return 0;
     }
 
+    // checks if navigator object available and gets current lat/long
     if (navigator && navigator.geolocation) {
       geolocation.getLocation().then(function(data){
         $scope.currentLocation = data.coords;
@@ -28,6 +29,7 @@ angular.module('traverse', ['ngSanitize', 'geolocation'])
       console.log("Geolocation is not supported by this browser.");
     }
 
+    // returns promise with origin address
     function getOriginAddress (latlng) {
       var defered =  $q.defer(),
         coder = new google.maps.Geocoder();
@@ -37,6 +39,7 @@ angular.module('traverse', ['ngSanitize', 'geolocation'])
       return defered.promise;
     }
 
+    // function called when user asks for current location
     $scope.setCurrentLocationAsOrigin = function (currentLocation) {
       var latlng = new google.maps.LatLng(currentLocation.latitude, currentLocation.longitude);
       $scope.localLoading = true;
@@ -48,31 +51,37 @@ angular.module('traverse', ['ngSanitize', 'geolocation'])
         })}, 1000);
     };
 
+    // travel mode options
     $scope.travelOptions = {
       "i am driving": "DRIVING",
       "i am walking": "WALKING",
       "i am bicycling": "BICYCLING"
     };
-
+    // Set default travel mode
     $scope.travelMode = $scope.travelOptions["i am driving"];
 
+    // instantiates point of origin
     $scope.pointOfOrigin = new Location();
+
+    // instantiates destinations []
     $scope.destinations = [];
 
     // Add first destination
     $scope.destinations.push(new Location());
 
+    // attached to new dest button
     $scope.addNewDestination = function(){
       var newDest = new Location();
       $scope.destinations.push(newDest);
     };
 
+    // attached to destinations - for removal
     $scope.removeDestination = function (index) {
       $scope.destinations = _.without($scope.destinations, $scope.destinations[index]);
     };
 
+    // called when optimize button is called
     $scope.getResults = function () {
-      $scope.loading = true;
       var locations = [$scope.pointOfOrigin].concat($scope.destinations),
         matrixService = new google.maps.DistanceMatrixService(),
         routingService = new google.maps.DirectionsService(),
@@ -88,11 +97,15 @@ angular.module('traverse', ['ngSanitize', 'geolocation'])
           origin: $scope.pointOfOrigin.address,
           optimizeWaypoints: true
         };
+      // set loading true
+      $scope.loading = true;
 
+      // iterate through locations to create geoMatrix args
       angular.forEach(locations, function (local) {
         matrixArgs.origins.push(local.address);
         matrixArgs.destinations.push(local.address);
       });
+      // get distance matrix and attach to scope
       matrixService.getDistanceMatrix(matrixArgs, function(d){
         $scope.results = d;
         angular.forEach($scope.results.originAddresses, function(newAddress, key){
@@ -103,20 +116,24 @@ angular.module('traverse', ['ngSanitize', 'geolocation'])
             $scope.destinations[key - 1].distanceFromOrigin = d.rows[0].elements[key].distance.text.replace(/\D/g, '');
           }
         });
+        // sort destinations by distance to origin so they can be reflected in list
         $scope.destinations.sort(function(a, b){
           return a.distanceFromOrigin-b.distanceFromOrigin;
         });
-        routingArgs.destination = $scope.destinations[0].address;
+        // Set final destination in routing args
+        routingArgs.destination = $scope.destinations[$scope.destinations - 1].address;
+        // define route waypoints (all other destination but final)
         angular.forEach($scope.destinations, function(local, key){
           if (key !== 0 || key !== $scope.destinations.length - 1) {
             routingArgs.waypoints.push({location: local.address});
           }
         });
+        // Get route instructions
         routingService.route(routingArgs, function(d) {
           $scope.route = d;
-          window.route = d;
         });
       });
+      // Timeout for loading effect
       $timeout(function(){
         $scope.loading = false;
       }, 1000);
