@@ -49,12 +49,12 @@ angular.module('traverse', ['ngSanitize', 'geolocation'])
     };
 
     $scope.travelOptions = {
-      driving: "DRIVING",
-      walking: "WALKING",
-      bicycling: "BICYCLING"
+      "i am driving": "DRIVING",
+      "i am walking": "WALKING",
+      "i am bicycling": "BICYCLING"
     };
 
-    $scope.travelMode = $scope.travelOptions.driving;
+    $scope.travelMode = $scope.travelOptions["i am driving"];
 
     $scope.pointOfOrigin = new Location();
     $scope.destinations = [];
