@@ -121,7 +121,7 @@ angular.module('traverse', ['ngSanitize', 'geolocation'])
           return a.distanceFromOrigin-b.distanceFromOrigin;
         });
         // Set final destination in routing args
-        routingArgs.destination = $scope.destinations[$scope.destinations - 1].address;
+        routingArgs.destination = $scope.destinations[$scope.destinations.length - 1].address;
         // define route waypoints (all other destination but final)
         angular.forEach($scope.destinations, function(local, key){
           if (key !== 0 || key !== $scope.destinations.length - 1) {
