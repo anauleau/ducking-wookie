@@ -118,7 +118,7 @@ angular.module('traverse', ['ngSanitize', 'geolocation'])
         });
         // sort destinations by distance to origin so they can be reflected in list
         $scope.destinations.sort(function(a, b){
-          return a.distanceFromOrigin-b.distanceFromOrigin;
+          return b.distanceFromOrigin-a.distanceFromOrigin;
         });
         // Set final destination in routing args
         routingArgs.destination = $scope.destinations[$scope.destinations.length - 1].address;
