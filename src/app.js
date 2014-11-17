@@ -2,12 +2,16 @@
  * Created by andreas on 11/7/14.
  */
 
-angular.module('traverse', ['ngSanitize'])
-  .controller('mainCtrl', ['$scope', '$timeout', function ($scope, $timeout) {
+angular.module('traverse', ['ngSanitize', 'geolocation'])
+  .controller('mainCtrl', ['$scope', '$timeout', 'geolocation', '$q', function ($scope, $timeout, geolocation, $q) {
+
+    // Location class
     function Location () {
       this.address;
       this.distanceFromOrigin;
     }
+
+    // Compare fn to order array of objects by property with num value
     function compare(a,b) {
       if (a.distanceFromOrigin < b.distanceFromOrigin)
         return -1;
@@ -15,6 +19,34 @@ angular.module('traverse', ['ngSanitize'])
         return 1;
       return 0;
     }
+
+    if (navigator && navigator.geolocation) {
+      geolocation.getLocation().then(function(data){
+        $scope.currentLocation = data.coords;
+      });
+    } else {
+      console.log("Geolocation is not supported by this browser.");
+    }
+
+    function getOriginAddress (latlng) {
+      var defered =  $q.defer(),
+        coder = new google.maps.Geocoder();
+      coder.geocode({location: latlng}, function (d) {
+        defered.resolve(d)
+      });
+      return defered.promise;
+    }
+
+    $scope.setCurrentLocationAsOrigin = function (currentLocation) {
+      var latlng = new google.maps.LatLng(currentLocation.latitude, currentLocation.longitude);
+      $scope.localLoading = true;
+      $scope.hideLink = true;
+      $timeout(function(){
+        getOriginAddress(latlng).then(function(d){
+          $scope.pointOfOrigin.address = d[0].formatted_address;
+          $scope.localLoading = false;
+        })}, 1000);
+    };
 
     $scope.travelOptions = {
       driving: "DRIVING",
