@@ -57,10 +57,22 @@
   <div class="row" ng-hide="loading || !results">
     <h3 class="text-center">directions</h3>
     <div ng-repeat="leg in route.routes[0].legs">
-      <h5 class="text-center"><strong>{{ leg.start_address }}</strong><br/>to<br/><strong>{{ leg.end_address }}</strong><br/><em>({{ leg.distance.text }} - {{ leg.duration.text }})</em></h5>
-      <ol>
-        <li ng-repeat="step in leg.steps" ng-bind-html="step.instructions"></li>
-      </ol>
+      <table class="table table-striped">
+        <tbody>
+        <tr>
+          <td>
+            <h5 class="text-center"><strong>{{ leg.start_address }}</strong><br/>to<br/><strong>{{ leg.end_address }}</strong><br/><em>({{ leg.distance.text }} - {{ leg.duration.text }})</em></h5>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <ol>
+              <li ng-repeat="step in leg.steps" ng-bind-html="step.instructions"></li>
+            </ol>
+          </td>
+        </tr>
+        </tbody>
+      </table>
     </div>
   </div>
   <div class="row" ng-hide="loading || !results">
