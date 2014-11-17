@@ -56,7 +56,7 @@
   <!--</div>-->
   <div class="row" ng-hide="loading || !results">
     <h3 class="text-center">directions</h3>
-    <div ng-repeat="leg in route.routes[0].legs">
+    <div ng-repeat="leg in route.routes[0].legs" ng-if="!$last && destinations.length > 1">
       <table class="table table-striped">
         <tbody>
         <tr>
